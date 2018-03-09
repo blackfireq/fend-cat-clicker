@@ -1,43 +1,5 @@
-//first kiity info
-// const firstKittyImage = document.querySelector('.first-kitty-image');
-// const firstKittyCounter = document.querySelector('.first-kitty-counter');
-// const firstKittyName = document.querySelector('.first-kitty-name');
-// let firstKittyNumOfClicks = 0;
-// //second kitty info
-// const secondKittyImage = document.querySelector('.second-kitty-image');
-// const secondKittyCounter = document.querySelector('.second-kitty-counter');
-// const secondKittyName = document.querySelector('.second-kitty-name');
-// let secondKittyNumOfClicks = 0;
-//
-//
-// //update names of both kitties
-// firstKittyName.textContent = 'George';
-// secondKittyName.textContent = 'Alfred';
-//
-// // add eventlistener for click on the first kitty Image
-// firstKittyImage.addEventListener('click', function(){
-//   // update the numOfClicks
-//   firstKittyNumOfClicks++;
-//   // update kittyCounter
-//   firstKittyCounter.textContent = firstKittyNumOfClicks;
-// });
-//
-// // add eventlistener for click on the second kitty Image
-// secondKittyImage.addEventListener('click', function(){
-//   // update the numOfClicks
-//   secondKittyNumOfClicks++;
-//   // TODO: update kittyCounter
-//   secondKittyCounter.textContent = secondKittyNumOfClicks;
-// });
 
-
-// <article class="kitty second-kitty">
-//   <header class="">
-//     <p class="second-kitty-counter">00</p>
-//     <p class="second-kitty-name"></p>
-//   </header>
-//   <img class="second-kitty-image" src="http://bit.ly/2tizU3c">
-// </article>
+//Model
 
 class Cat {
   constructor(name, pic){
@@ -75,95 +37,120 @@ for(let i = 0; i < catName.length; i++){
   allCats.push(new Cat(catName[i],catPic[i]));
 }
 
+//View
 
 //build cards in aside
-for(let i = 0; i < 5; i++){
-  document.querySelector('aside').append(function() {
+const view = {
+  init : function(){
+    view.buildAside();
+    allCats.forEach(function(cat){
+      view.buildCatCard(cat);
+    });
+    view.buildMain(allCats[0]);
 
+    // add click eventlistener for aside
+    document.querySelector('aside').addEventListener('click', function(event){
+      //make sure you cliked on name
+      if(event.target.nodeName == 'P'){
+        //cycle through cats to match name
+        allCats.forEach( function(cat){
+          if(cat['name'] === event.target.textContent){
+            //update count
+            cat['count']++;
+            //assign name
+            document.querySelector('.main-name').textContent = cat['name'];
+            //assign count
+            document.querySelector('.main-count').textContent = cat['count'];
+            //assign pic
+            document.querySelector('main img').setAttribute('src',cat['pic']);
+          }
+        });
+      }
+    });
+
+    //add clickListener for main
+    document.querySelector('main').addEventListener('click', function(event){
+      console.log('boom');
+      //update counter
+      allCats.forEach(function(cat){
+        if(event.target.getAttribute('src') === cat['pic']){
+          console.log('shooooo');
+          document.querySelector('.main-count').textContent = ++cat['count'];
+        }
+      });
+    });
+  },
+
+  buildAside : function() {
+    //create aside to store a list of cats
+    const aside = document.createElement('aside');
+
+    //attach to body
+    document.querySelector('body').append(aside);
+  },
+
+  buildCatCard : function(cat) {
     //card
-    let cardElement = document.createElement('article');
+    const cardElement = document.createElement('article');
     cardElement.classList.add('card');
-    cardElement.classList.add('cat'+i);
-
-    //header for name and count
-    let headerElement = document.createElement('header');
 
     //name
-    let nameElement = document.createElement('p');
-    nameElement.classList.add('name');
-    nameElement.textContent = allCats[i]['name'];
+    const nameElement = document.createElement('p');
+    nameElement.textContent = cat['name'];
+    cardElement.append(nameElement);
+
+    //add to aside
+    document.querySelector('aside').append(cardElement);
+  },
+
+  buildMain : function(cat){
+    // populate main area with the first cat
+    const cardElement = document.createElement('article');
+    cardElement.classList.add('main-card');
+
+    //get and set header headerElement
+    const headerElement = document.createElement('header');
+    headerElement.classList.add('main-header');
+
+    //name
+    const nameElement = document.createElement('p');
+    nameElement.classList.add('main-name');
+    nameElement.textContent = cat['name'];
     headerElement.append(nameElement);
 
-    //count
-    let counterElement = document.createElement('p');
-    counterElement.classList.add('counter');
-    counterElement.textContent = allCats[i]['count'];
+    //counter
+    const counterElement = document.createElement('p');
+    counterElement.classList.add('main-count');
+    counterElement.textContent = cat['count'];
     headerElement.append(counterElement);
 
-    //img
-    let imageElement = document.createElement('img');
-    imageElement.setAttribute('src', allCats[i]['pic']);
+    //pic
+    const imageElement = document.createElement('img');
+    imageElement.setAttribute('src', cat['pic']);
 
-    //append to cardElement
+    //append to cardElement to card
     cardElement.append(headerElement);
     cardElement.append(imageElement);
 
-    return cardElement;
-  }());
-}
-// populate main area with the first cat
-document.querySelector('main').append(function() {
-  let cardElement = document.createElement('article');
-  cardElement.classList.add('main-card');
-
-  //get and set header headerElement
-  let headerElement = document.createElement('header');
-  headerElement.classList.add('main-header');
-
-  //name
-  let nameElement = document.createElement('p');
-  nameElement.classList.add('main-name');
-  nameElement.textContent = allCats[0]['name'];
-  headerElement.append(nameElement);
-
-  //counter
-  let counterElement = document.createElement('p');
-  counterElement.classList.add('main-count');
-  counterElement.textContent = allCats[0]['count'];
-  headerElement.append(counterElement);
-
-  //pic
-  let imageElement = document.createElement('img');
-  imageElement.setAttribute('src', allCats[0]['pic']);
-
-  //append to cardElement
-  cardElement.append(headerElement);
-  cardElement.append(imageElement);
-
-
-  return cardElement;
-}());
-
-// add click eventlistener
-document.querySelector('aside').addEventListener('click', function(event){
-  console.log(`you clicked ${event.target.nodeName}`);
-  //make sure you cliked on name
-  if(event.target.nodeName == 'P' && event.target.classList.contains('name')){
-
-    //cycle through cats to match name
-    allCats.forEach( function(cat){
-      if(cat['name'] === event.target.textContent){
-        //update count
-        cat['count']++;
-        //assign name
-        document.querySelector('.main-name').textContent = cat['name'];
-        //assign count
-        document.querySelector('.main-count').textContent = cat['count'];
-        event.target.nextSibling.textContent = cat['count'];
-        //assign pic
-        document.querySelector('main img').setAttribute('src',cat['pic']);
-      }
-    });
+    //build main element
+    const mainElement = document.createElement('main');
+    mainElement.append(cardElement);
+    document.querySelector('body').append(mainElement);
   }
+}
 
-});
+const octopus = {
+  init : function() {
+    view.init();
+  },
+  renderAside : function() {
+    allCats.forEach( function(cat){
+      view.buildAside(cat);
+    });
+  },
+  renderMain : function() {
+    view.buildMain(allCats[0]);
+  }
+};
+
+octopus.init();
